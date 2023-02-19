@@ -30,8 +30,8 @@ class Event(models.Model):
     status = models.CharField(max_length=2,choices=STATUS_CHOICES)
     location = models.CharField(max_length=140)
     # we could use GeoDjango for precise location data (PointField)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    # users = ! show list
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events_created')
+    subscribers = models.ManyToManyField(User, related_name='events_subscribed')
 
     def __str__(self) -> str:
         return f'{self.title}, {self.date}'
@@ -39,10 +39,27 @@ class Event(models.Model):
     class Meta:
         ordering = ['date']
 
-class Subscriptions(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    # we could define a generic relationship so subscriptions could be reused for other types of subscriptions
+    #* RETRIEVE SUBSCRIBERS TO AN EVENT:
+    # event1 = Event.objects.get(title='Event 1')
+    # subscribers = event1.subscribers.all()
+
+# class Subscription(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    
+#     def __str__(self) -> str:
+#         return f'{self.user} subscribed to {self.event}'
+
+#     class Meta:
+#         unique_together = ('user', 'event')
+
+    #* ADD USERS TO AN EVENT:
+    # user1 = User.objects.get(email='user1@example.com')
+    # event1 = Event.objects.get(title='Event 1')
+    # event1.users.add(user1)
+
+    #* Generic Relationship: 
+    # we could define a generic relationship so subscriptions could be reused for other types of subscriptions, instead of event, write:
     # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     # object_id = models.PositiveIntegerField()
     # content_object = GenericForeignKey()
