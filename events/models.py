@@ -7,8 +7,12 @@ class User(models.Model):
     last_name = models.CharField(max_length=60)
     super_user = models.BooleanField(default=False)
 
+    def __str__(self) -> str:
+        return f'{self.first_name} {self.last_name}'
+
     class Meta:
         indexes = [models.Index(fields=['last_name', 'first_name'])]
+        ordering = ['last_name']
 
 class Event(models.Model):
     STATUS_DRAFT = 'DR'
@@ -28,6 +32,12 @@ class Event(models.Model):
     # we could use GeoDjango for precise location data (PointField)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     # users = ! show list
+
+    def __str__(self) -> str:
+        return f'{self.title}, {self.date}'
+
+    class Meta:
+        ordering = ['date']
 
 class Subscriptions(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

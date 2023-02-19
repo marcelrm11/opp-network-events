@@ -1,1 +1,5 @@
-python 3.11.1
+run from 0:
+
+```shell
+pipenv install
+```
