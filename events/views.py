@@ -1,6 +1,7 @@
 import datetime
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -60,6 +61,9 @@ def events_list(request):
 
     # create new event:    
     elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        request.data['creator'] = request.user.id
         serializer = EventSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -70,7 +74,7 @@ def events_list(request):
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 def event_detail(request, id):
-
+    
     # search specific event in database:
     event = get_object_or_404(Event, pk=id)
 
@@ -105,7 +109,7 @@ def subscribers(request, id):
         serializer = SubscriberSerializer(event.subscribers.all(), many=True)
         return Response(serializer.data)
 
-    # add user to the event:
+    # subscribe user to the event:
     elif request.method == 'POST':
         user_id = request.data.get('user_id', None)
         user = get_object_or_404(User, pk=user_id)        
@@ -114,35 +118,44 @@ def subscribers(request, id):
         return Response(status=status.HTTP_200_OK)
 
 
-# USERS (READ, CREATE) =======
+# USERS (READ) =======
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def users_list(request):
 
     #view list of users:
-    if request.method == 'GET':
-        queryset = User.objects.prefetch_related('events_created', 'events_subscribed').all()
+    queryset = User.objects.prefetch_related('events_created', 'events_subscribed').all()
 
-        # filter by super_user (boolean):
-        super_user = request.query_params.get('super_user', None)
-        if super_user is not None:
-            queryset = queryset.filter(super_user=super_user)
+    # filter by is_superuser (boolean):
+    is_superuser = request.query_params.get('is_superuser', None)
+    if is_superuser is not None:
+        queryset = queryset.filter(is_superuser=is_superuser)
 
-        # search by first or last name (search_query):
-        search_query = request.query_params.get('search_query', None)
-        if search_query is not None:
-            queryset = queryset.filter(Q(first_name__istartswith=search_query) | Q(last_name__istartswith=search_query))
+    # search by first or last name (search_query):
+    search_query = request.query_params.get('search_query', None)
+    if search_query is not None:
+        queryset = queryset.filter(Q(first_name__istartswith=search_query) | Q(last_name__istartswith=search_query))
 
-        # response
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data)
+    # response
+    serializer = UserSerializer(queryset, many=True)
+    return Response(serializer.data)
 
-    # create new user:
-    elif request.method == 'POST':
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+# USERS (CREATE/register) =======
+
+@api_view(['GET', 'POST'])
+def create_user(request):
+    # custom username checks
+    serializer = UserSerializer(data=request.data)
+    username = request.data.get('username', None)
+    if not username:
+        return Response({'msg': 'username is required'}, status=status.HTTP_400_BAD_REQUEST)
+    existing_user = User.objects.filter(username=username).exists()
+    if existing_user:
+        return Response({'msg': 'username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # USERS (DETAIL, UPDATE, DELETE) =======
@@ -169,3 +182,23 @@ def user_detail(request, id):
     elif request.method == 'DELETE':
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# AUTHENTICATION =======
+
+@api_view(['GET', 'POST'])
+def user_login(request):
+    username = request.data.get('username', None)
+    password = request.data.get('password', None)
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return Response({'msg': 'login successful'}, status=status.HTTP_202_ACCEPTED)
+    else:
+        return Response({'msg': 'login failed'}, status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view()
+def user_logout(request):
+    logout(request)
+    return Response({'msg': 'user was logged out'}, status=status.HTTP_200_OK)
+

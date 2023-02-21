@@ -1,15 +1,19 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from . import models
 # Register your models here.
 
 @admin.register(models.User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'super_user', 'email']
-    # list_editable = ['super_user']
-    list_per_page = 25
-    list_filter = ['super_user']
-    odering = ['last_name', 'first_name']
-    search_fields = ['first_name__istartswith', 'last_name__istartswith']
+class UserAdmin(BaseUserAdmin):
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("username", "password1", "password2", "email", "first_name", "last_name"),
+            },
+        ),
+    )
 
 @admin.register(models.Event)
 class EventAdmin(admin.ModelAdmin):

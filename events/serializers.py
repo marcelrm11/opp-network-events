@@ -4,7 +4,7 @@ from .models import User, Event
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'super_user', 'events_created', 'events_subscribed']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'is_superuser', 'events_created', 'events_subscribed']
 
     # def validate(self, data):
     #     if data['password'] != data['confirm_password']:

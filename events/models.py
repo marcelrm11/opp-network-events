@@ -1,12 +1,8 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-class User(models.Model):
+class User(AbstractUser):
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=32)
-    first_name = models.CharField(max_length=60)
-    last_name = models.CharField(max_length=60)
-    super_user = models.BooleanField(default=False)
-    # we need to pass events_created and events_subscribed when creating a user. they can be empty arrays.
 
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name}'
