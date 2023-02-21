@@ -6,6 +6,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'first_name', 'last_name', 'email', 'super_user', 'events_created', 'events_subscribed']
 
+    # def validate(self, data):
+    #     if data['password'] != data['confirm_password']:
+    #         return serializers.ValidationError('Passwords do not match')
+    #     return data
+
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
