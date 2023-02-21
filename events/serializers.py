@@ -16,3 +16,8 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ['id', 'title', 'date', 'location', 'status', 'creator', 'subscribers']
     # creator = UserSerializer() to serialize all info as nested object
+
+class SubscriberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email']

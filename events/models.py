@@ -40,10 +40,6 @@ class Event(models.Model):
     class Meta:
         ordering = ['date']
     
-    #* ADD USERS TO AN EVENT:
-    # user1 = User.objects.get(email='user1@example.com')
-    # event1 = Event.objects.get(title='Event 1')
-    # event1.subscribers.add(user1)
 
     #* RETRIEVE SUBSCRIBERS TO AN EVENT:
     # event1 = Event.objects.get(title='Event 1')
