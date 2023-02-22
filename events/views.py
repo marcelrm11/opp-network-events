@@ -2,6 +2,7 @@ import datetime
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -24,12 +25,13 @@ def events_list(request):
 
     # view list of events:
     if request.method == 'GET':
+
         queryset = Event.objects.select_related('creator').prefetch_related('subscribers').all()
 
         # Depending on User and Status:
         # -----------------------------
         
-        # superuser has no filters
+        # no superusers have some filters to what events they see
         if not request.user.is_superuser:
 
             # If not logged in -> only see Public events:
@@ -37,12 +39,11 @@ def events_list(request):
                 queryset = queryset.filter(status='PU')
 
             # Draft events -> only shown to creator:
-            print(request.user.id)
             queryset = queryset.exclude(Q(status='DR') & ~Q(creator=request.user.id))
 
 
-        # Search and Filters:
-        # -------------------
+        # Search and Filters (query_params):
+        # ----------------------------------
 
         # to include past events, pass past_events=True:
         past_events = request.query_params.get('past_events', None)
@@ -63,7 +64,7 @@ def events_list(request):
         if before_date is not None:
             queryset = queryset.filter(date__lt=before_date)
 
-        # search by text in title (search_query):
+        # search by text in event title (search_query):
         search_query = request.query_params.get('search_query', None)
         if search_query is not None:
             queryset = queryset.filter(title__icontains=search_query)
@@ -75,12 +76,15 @@ def events_list(request):
 
         # response
         serializer = EventSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # create new event:    
+    # create new event (only logged in users):   
     elif request.method == 'POST':
+
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+        
+        # set the creator to the current logged in user
         request.data['creator'] = request.user.id
         serializer = EventSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -99,7 +103,7 @@ def event_detail(request, id):
     # get event details:
     if request.method == 'GET':
 
-        # superuser has no filters
+        # no superusers have some filters to the events they can see
         if not request.user.is_superuser:
 
             # anonymous users can only see public events:
@@ -108,30 +112,34 @@ def event_detail(request, id):
 
             # draft events only shown to creator if logged in:
             if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+                return Response(status=status.HTTP_403_FORBIDDEN)
 
         serializer = EventSerializer(event)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # can edit event only if user is authenticated
+    elif (not request.user.is_authenticated):
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     # update event details:
     elif request.method in ['PUT', 'PATCH']:
 
-        # can edit event only if user is authenticated and is the creator of the event OR is a superuser
-        if ((not request.user.is_authenticated) and (request.user.id != event.creator.id)) or (not request.user.is_superuser) :
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # can edit event only if user is the creator of the event OR is a superuser
+        if (request.user.id != event.creator.id) or (not request.user.is_superuser) :
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         # validate data and update db record
         serializer = EventSerializer(event, data=request.data, partial=request.method == 'PATCH')
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     # delete event:
     elif request.method == 'DELETE':
 
-        # can delete event only if user is authenticated and is the creator of the event OR is a superuser
-        if ((not request.user.is_authenticated) and (request.user.id != event.creator.id)) or (not request.user.is_superuser) :
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # can delete event only if user is the creator of the event OR is a superuser
+        if (request.user.id != event.creator.id) or (not request.user.is_superuser):
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -154,10 +162,10 @@ def subscribers(request, id):
 
         # draft events only shown to creator if logged in:
         if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         serializer = SubscriberSerializer(event.subscribers.all(), many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     # subscribe user to the event:
     elif request.method == 'POST':
@@ -175,7 +183,12 @@ def subscribers(request, id):
 # USERS (READ) =======
 
 @api_view(['GET'])
+@login_required
 def users_list(request):
+    
+    # only a superuser can see all users 
+    if not request.user.is_superuser:
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     #view list of users:
     queryset = User.objects.prefetch_related('events_created', 'events_subscribed').all()
@@ -192,13 +205,14 @@ def users_list(request):
 
     # return list of users:
     serializer = UserSerializer(queryset, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # USERS (CREATE/register) =======
 
 @api_view(['GET', 'POST'])
 def create_user(request):
+
     serializer = UserSerializer(data=request.data)
     
     # custom username checks
@@ -222,8 +236,14 @@ def create_user(request):
 
 # USERS (DETAIL, UPDATE, DELETE) =======
 
+# only logged users can access this area
+@login_required
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 def user_detail(request, id):
+
+    # only the same user or a superuser can see/edit user details
+    if (request.user.id != id) or (not request.user.is_superuser):
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     # search specific user in database:
     user = get_object_or_404(User, pk=id)
@@ -231,14 +251,14 @@ def user_detail(request, id):
     # get user details:
     if request.method == 'GET':
         serializer = UserSerializer(user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     # update user details:
     elif request.method in ['PUT', 'PATCH']:
         serializer = UserSerializer(user, data=request.data, partial=request.method == 'PATCH')
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     # delete user:
     elif request.method == 'DELETE':
@@ -250,14 +270,27 @@ def user_detail(request, id):
 
 @api_view(['GET', 'POST'])
 def user_login(request):
+
+    # if there is an active session
+    if request.user.is_authenticated:
+        user = UserSerializer(request.user)
+        return Response({'msg': 'user already logged in', 'user': user}, status=status.HTTP_200_OK)
+
+    # check request credentials and authenticate:
     username = request.data.get('username', None)
     password = request.data.get('password', None)
+
+    if not username or not password:
+        return Response({'msg': 'credentials are required'}, status=status.HTTP_400_BAD_REQUEST)
     user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return Response({'msg': 'login successful'}, status=status.HTTP_202_ACCEPTED)
-    else:
+
+    # authentication failed
+    if not user:
         return Response({'msg': 'login failed'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    # authentication succeeded
+    login(request, user)
+    return Response({'msg': 'login successful'}, status=status.HTTP_202_ACCEPTED)        
 
 @api_view()
 def user_logout(request):
