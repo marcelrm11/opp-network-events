@@ -1,8 +1,9 @@
 import datetime
 from django.shortcuts import render, get_object_or_404
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -218,10 +219,11 @@ def create_user(request):
     # custom username checks
     # ----------------------
     username = request.data.get('username', None)
+    password = request.data.get('password', None)
 
     # if no username was provided:
-    if not username:
-        return Response({'msg': 'username is required'}, status=status.HTTP_400_BAD_REQUEST)
+    if not username or not password:
+        return Response({'msg': 'username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
     # if username already used in database:
     existing_user = User.objects.filter(username=username).exists()
@@ -229,6 +231,11 @@ def create_user(request):
         return Response({'msg': 'username already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
     # validate form data and create user:
+    try:
+        validate_password(password)
+    except ValidationError as e:
+        return Response({'validation errors': e}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(serializer.data, status=status.HTTP_201_CREATED)
