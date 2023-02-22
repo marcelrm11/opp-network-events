@@ -28,14 +28,17 @@ def events_list(request):
 
         # Depending on User and Status:
         # -----------------------------
+        
+        # superuser has no filters
+        if not request.user.is_superuser:
 
-        # If not logged in -> only see Public events:
-        if not request.user.is_authenticated:
-            queryset = queryset.filter(status='PU')
+            # If not logged in -> only see Public events:
+            if not request.user.is_authenticated:
+                queryset = queryset.filter(status='PU')
 
-        # Draft events -> only shown to creator:
-        print(request.user.id)
-        queryset = queryset.exclude(Q(status='DR') & ~Q(creator=request.user.id))
+            # Draft events -> only shown to creator:
+            print(request.user.id)
+            queryset = queryset.exclude(Q(status='DR') & ~Q(creator=request.user.id))
 
 
         # Search and Filters:
@@ -95,6 +98,18 @@ def event_detail(request, id):
 
     # get event details:
     if request.method == 'GET':
+
+        # superuser has no filters
+        if not request.user.is_superuser:
+
+            # anonymous users can only see public events:
+            if (not request.user.is_authenticated) and (not event.status=='PU'):
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+            # draft events only shown to creator if logged in:
+            if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = EventSerializer(event)
         return Response(serializer.data)
 
@@ -132,14 +147,27 @@ def subscribers(request, id):
 
     # view list of subscribers:
     if request.method == 'GET':
+
+        # anonymous users can only see public events:
+        if (not request.user.is_authenticated) and (not event.status=='PU'):
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        # draft events only shown to creator if logged in:
+        if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = SubscriberSerializer(event.subscribers.all(), many=True)
         return Response(serializer.data)
 
     # subscribe user to the event:
     elif request.method == 'POST':
-        user_id = request.data.get('user_id', None)
-        user = get_object_or_404(User, pk=user_id)        
-        event.subscribers.add(user)
+
+        # only logged in users should subscribe to an event
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        # subscribe logged in user to the event
+        event.subscribers.add(request.user)
         event.save()
         return Response(status=status.HTTP_200_OK)
 
