@@ -26,6 +26,21 @@ def events_list(request):
     if request.method == 'GET':
         queryset = Event.objects.select_related('creator').prefetch_related('subscribers').all()
 
+        # Depending on User and Status:
+        # -----------------------------
+
+        # If not logged in -> only see Public events:
+        if not request.user.is_authenticated:
+            queryset = queryset.filter(status='PU')
+
+        # Draft events -> only shown to creator:
+        print(request.user.id)
+        queryset = queryset.exclude(Q(status='DR') & ~Q(creator=request.user.id))
+
+
+        # Search and Filters:
+        # -------------------
+
         # to include past events, pass past_events=True:
         past_events = request.query_params.get('past_events', None)
         if not past_events:
@@ -85,6 +100,12 @@ def event_detail(request, id):
 
     # update event details:
     elif request.method in ['PUT', 'PATCH']:
+
+        # can edit event only if user is authenticated and is the creator of the event OR is a superuser
+        if ((not request.user.is_authenticated) and (request.user.id != event.creator.id)) or (not request.user.is_superuser) :
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        # validate data and update db record
         serializer = EventSerializer(event, data=request.data, partial=request.method == 'PATCH')
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -92,6 +113,11 @@ def event_detail(request, id):
 
     # delete event:
     elif request.method == 'DELETE':
+
+        # can delete event only if user is authenticated and is the creator of the event OR is a superuser
+        if ((not request.user.is_authenticated) and (request.user.id != event.creator.id)) or (not request.user.is_superuser) :
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -136,7 +162,7 @@ def users_list(request):
     if search_query is not None:
         queryset = queryset.filter(Q(first_name__istartswith=search_query) | Q(last_name__istartswith=search_query))
 
-    # response
+    # return list of users:
     serializer = UserSerializer(queryset, many=True)
     return Response(serializer.data)
 
@@ -145,14 +171,22 @@ def users_list(request):
 
 @api_view(['GET', 'POST'])
 def create_user(request):
-    # custom username checks
     serializer = UserSerializer(data=request.data)
+    
+    # custom username checks
+    # ----------------------
     username = request.data.get('username', None)
+
+    # if no username was provided:
     if not username:
         return Response({'msg': 'username is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # if username already used in database:
     existing_user = User.objects.filter(username=username).exists()
     if existing_user:
         return Response({'msg': 'username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # validate form data and create user:
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(serializer.data, status=status.HTTP_201_CREATED)

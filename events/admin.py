@@ -20,7 +20,7 @@ class EventAdmin(admin.ModelAdmin):
     list_display = ['title', 'date', 'status', 'creator']
     list_editable = ['status']
     list_per_page = 25
-    list_filter = ['status']
+    list_filter = ['status', 'date']
     ordering = ['date']
     search_fields = ['title__icontains']
 
