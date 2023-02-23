@@ -34,7 +34,7 @@ def events_list(request):
 
             # If not logged in -> only see Public events:
             if not request.user.is_authenticated:
-                queryset = queryset.filter(status='PU')
+                queryset = queryset.filter(status='PB')
 
             # Draft events -> only shown to creator:
             queryset = queryset.exclude(Q(status='DR') & ~Q(creator=request.user.id))
@@ -107,7 +107,7 @@ def event_detail(request, id):
         if not request.user.is_superuser:
 
             # anonymous users can only see public events:
-            if (not request.user.is_authenticated) and (not event.status=='PU'):
+            if (not request.user.is_authenticated) and (not event.status=='PB'):
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
 
             # draft events only shown to creator if logged in:
@@ -160,7 +160,7 @@ def subscribers(request, id):
     if request.method == 'GET':
 
         # anonymous users can only see public events:
-        if (not request.user.is_authenticated) and (not event.status=='PU'):
+        if (not request.user.is_authenticated) and (not event.status=='PB'):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # draft events only shown to creator if logged in:

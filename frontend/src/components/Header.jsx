@@ -6,8 +6,8 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink,
 } from "reactstrap";
+import { NavLink } from "react-router-dom";
 import logo from "../assets/react.svg";
 import "../styles/Header.css";
 
@@ -27,10 +27,14 @@ export const Header = (props) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ms-auto" navbar>
             <NavItem>
-              <NavLink href="#">Events</NavLink>
+              <NavLink to="/" className="nav-link">
+                Events
+              </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="#">My Profile</NavLink>
+              <NavLink to="/users" className="nav-link">
+                My Profile
+              </NavLink>
             </NavItem>
           </Nav>
         </Collapse>
