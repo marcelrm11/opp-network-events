@@ -16,11 +16,12 @@ def index(request):
     return Response({'msg': 'Welcome to Opportunity Network Events, where world-changing connections are made!'})
 
 # EVENTS (READ, CREATE) =======
-
+# =============================
 @api_view(['GET', 'POST'])
 def events_list(request):
 
     # view list of events:
+    # --------------------
     if request.method == 'GET':
 
         queryset = Event.objects.select_related('creator').prefetch_related('subscribers').all()
@@ -76,6 +77,7 @@ def events_list(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # create new event (only logged in users):   
+    # ----------------------------------------
     elif request.method == 'POST':
 
         if not request.user.is_authenticated:
@@ -90,7 +92,7 @@ def events_list(request):
 
 
 # EVENTS (DETAIL, UPDATE, DELETE) =======
-
+# =======================================
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 def event_detail(request, id):
     
@@ -98,6 +100,7 @@ def event_detail(request, id):
     event = get_object_or_404(Event, pk=id)
 
     # get event details:
+    # ------------------
     if request.method == 'GET':
 
         # no superusers have some filters to the events they can see
@@ -119,6 +122,7 @@ def event_detail(request, id):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     # update event details:
+    # ---------------------
     elif request.method in ['PUT', 'PATCH']:
 
         # can edit event only if user is the creator of the event OR is a superuser
@@ -132,6 +136,7 @@ def event_detail(request, id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # delete event:
+    # -------------
     elif request.method == 'DELETE':
 
         # can delete event only if user is the creator of the event OR is a superuser
@@ -143,7 +148,7 @@ def event_detail(request, id):
 
 
 # SUBSCRIBERS TO AN EVENT (READ, ADD) =======
-
+# ===========================================
 @api_view(['GET', 'POST'])
 def subscribers(request, id):
 
@@ -151,6 +156,7 @@ def subscribers(request, id):
     event = get_object_or_404(Event, pk=id)
 
     # view list of subscribers:
+    # -------------------------
     if request.method == 'GET':
 
         # anonymous users can only see public events:
@@ -165,6 +171,7 @@ def subscribers(request, id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # subscribe user to the event:
+    # ----------------------------
     elif request.method == 'POST':
 
         # only logged in users should subscribe to an event
@@ -178,7 +185,7 @@ def subscribers(request, id):
 
 
 # USERS (READ) =======
-
+# ====================
 @api_view(['GET'])
 @login_required
 def users_list(request):
@@ -187,7 +194,8 @@ def users_list(request):
     if not request.user.is_superuser:
         return Response(status=status.HTTP_403_FORBIDDEN)
 
-    #view list of users:
+    # view list of users:
+    # -------------------
     queryset = User.objects.prefetch_related('events_created', 'events_subscribed').all()
 
     # filter by is_superuser (boolean):
@@ -206,7 +214,7 @@ def users_list(request):
 
 
 # USERS (CREATE/register) =======
-
+# ===============================
 @api_view(['GET', 'POST'])
 def create_user(request):
 
@@ -238,7 +246,7 @@ def create_user(request):
 
 
 # USERS (DETAIL, UPDATE, DELETE) =======
-
+# ======================================
 # only logged users can access this area
 @login_required
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
@@ -252,11 +260,13 @@ def user_detail(request, id):
     user = get_object_or_404(User, pk=id)
 
     # get user details:
+    # -----------------
     if request.method == 'GET':
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # update user details:
+    # --------------------
     elif request.method in ['PUT', 'PATCH']:
         serializer = UserSerializer(user, data=request.data, partial=request.method == 'PATCH')
         serializer.is_valid(raise_exception=True)
@@ -264,13 +274,14 @@ def user_detail(request, id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # delete user:
+    # ------------
     elif request.method == 'DELETE':
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # AUTHENTICATION =======
-
+# ======================
 @api_view(['GET', 'POST'])
 def user_login(request):
 
