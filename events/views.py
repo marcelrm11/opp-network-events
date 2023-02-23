@@ -11,9 +11,13 @@ from rest_framework import status
 from .models import User, Event
 from .serializers import SubscriberSerializer, UserSerializer, EventSerializer
 
-@api_view()
+
 def index(request):
-    return Response({'msg': 'Welcome to Opportunity Network Events, where world-changing connections are made!'})
+    try:
+        events_set = Event.objects.filter(date__year='2022')
+    except ObjectDoesNotExist:
+        pass
+    return render(request, 'events.html', {'name': 'Marcel', 'events': list(events_set)})
 
 # EVENTS (READ, CREATE) =======
 
