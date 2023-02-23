@@ -8,7 +8,7 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
-import logo from "../logo.svg";
+import logo from "../assets/react.svg";
 import "../styles/Header.css";
 
 export const Header = (props) => {
@@ -30,7 +30,7 @@ export const Header = (props) => {
               <NavLink href="#">Events</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="#">UserName</NavLink>
+              <NavLink href="#">My Profile</NavLink>
             </NavItem>
           </Nav>
         </Collapse>
