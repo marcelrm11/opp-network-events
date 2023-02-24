@@ -4,7 +4,12 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
 import { Form, FormFeedback, FormGroup, Input, Label } from "reactstrap";
 
-export const LoginModal = ({ isOpen, toggle }) => {
+export const LoginModal = ({
+  isOpen,
+  toggle,
+  onLoginSuccess,
+  onUserUpdate,
+}) => {
   const [isInvalid, setIsInvalid] = useState(false);
   const [credentials, setCredentials] = useState({
     username: "",
@@ -23,15 +28,14 @@ export const LoginModal = ({ isOpen, toggle }) => {
         },
         body: JSON.stringify(credentials),
       });
-      //   console.log(response);
-      if (response.status != 200) {
+      const data = await response.json();
+      if (!response.ok) {
         setIsInvalid(true);
-        // console.log(isInvalid);
       } else {
-        const data = await response.json();
-        console.log(data);
         setIsInvalid(false);
         sessionStorage.setItem("user", JSON.stringify(data.user));
+        onUserUpdate(data.user);
+        onLoginSuccess();
         toggle();
         navigate("/");
       }

@@ -9,6 +9,7 @@ import {
   Spinner,
   Button,
   Collapse,
+  Badge,
 } from "reactstrap";
 import "../styles/EventDetails.css";
 import formatDate from "../functions/formatDate";
@@ -106,15 +107,18 @@ export const EventDetails = () => {
                   })}
                 </tbody>
               </Table>
-              <Button color="success" onClick={subscribe}>
+              <Button color="info" onClick={subscribe}>
                 Subscribe to event
               </Button>
             </Col>
           </Row>
           <Row xs="1">
             <Col>
-              <Button onClick={toggleSubscribers} color="info">
+              <Button onClick={toggleSubscribers} color="info" outline>
                 See attendants
+                <Badge className="ms-2" color="info">
+                  {subscribers.length}
+                </Badge>
               </Button>
               <Collapse isOpen={showSubscribers}>
                 <Table className="table-info" striped>
@@ -128,7 +132,7 @@ export const EventDetails = () => {
                   </thead>
                   <tbody>
                     {subscribers.map((s) => (
-                      <tr>
+                      <tr key={s.username}>
                         <td>
                           <img
                             src={s.img_url}

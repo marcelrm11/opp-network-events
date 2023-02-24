@@ -18,7 +18,7 @@ export const MyCard = ({ title, date, location, imgUrl, eventId }) => {
       <img alt="Sample" src={imgUrl} />
       <CardBody>
         <CardTitle tag="h5">{title}</CardTitle>
-        <CardText>
+        <div className="mb-3">
           <div>
             <span className="me-3">
               <BsCalendar4Event />
@@ -37,7 +37,7 @@ export const MyCard = ({ title, date, location, imgUrl, eventId }) => {
             </span>
             <span>{location}</span>
           </div>
-        </CardText>
+        </div>
         <Button color="info">
           <Link to={`/event/${eventId}`}>Details</Link>
         </Button>
