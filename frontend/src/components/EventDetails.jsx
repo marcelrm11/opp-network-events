@@ -15,7 +15,7 @@ import "../styles/EventDetails.css";
 import formatDate from "../functions/formatDate";
 import { capitalize } from "../functions/stringFunctions";
 
-export const EventDetails = () => {
+export const EventDetails = ({ user, token }) => {
   const { id } = useParams();
   const baseUrl = "http://localhost:8000/events/";
   const eventUrl = baseUrl + `events/${id}/`;
@@ -26,15 +26,28 @@ export const EventDetails = () => {
   const [subscribers, setSubscribers] = useState([]);
   const [showSubscribers, setShowSubscribers] = useState(false);
 
+  let headers = {};
+  if (token) {
+    headers = {
+      Authorization: `Token ${token}`,
+    };
+  }
+
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(eventUrl);
+      const response = await fetch(eventUrl, {
+        headers: headers,
+      });
       const data = await response.json();
       const [formattedDate, formattedTime] = formatDate(data.date);
-      const hostResponse = await fetch(baseUrl + `users/${data.creator}/`);
+      const hostResponse = await fetch(baseUrl + `users/${data.creator}/`, {
+        headers: headers,
+      });
       const hostData = await hostResponse.json();
-      const subscribersResponse = await fetch(eventUrl + "subscribers/");
+      const subscribersResponse = await fetch(eventUrl + "subscribers/", {
+        headers: headers,
+      });
       const subscribersData = await subscribersResponse.json();
       setIsLoading(false);
       setDetails({
@@ -66,9 +79,7 @@ export const EventDetails = () => {
     try {
       const response = await fetch(eventUrl + "subscribers/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { ...headers, "Content-Type": "application/json" },
         body: {},
       });
       const data = await response.json();

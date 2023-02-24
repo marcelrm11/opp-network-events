@@ -29,11 +29,13 @@ export const LoginModal = ({
         body: JSON.stringify(credentials),
       });
       const data = await response.json();
+      console.log("login response:", data);
       if (!response.ok) {
         setIsInvalid(true);
       } else {
         setIsInvalid(false);
         sessionStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("token", JSON.stringify(data.token));
         onUserUpdate(data.user);
         onLoginSuccess();
         toggle();

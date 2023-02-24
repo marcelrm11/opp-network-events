@@ -17,7 +17,7 @@ import { fetchCurrentUser } from "../functions/authentication";
 
 export const Header = ({ user, onUserUpdate, ...args }) => {
   const [activeSession, setActiveSession] = useState(false);
-  console.log("header user from props:", user);
+  // console.log("header user from props:", user);
 
   const [loginSuccessAlert, setLoginSuccessAlert] = useState(false);
   const handleLoginSuccess = () => {
@@ -58,6 +58,7 @@ export const Header = ({ user, onUserUpdate, ...args }) => {
     hideBar();
     setActiveSession(false);
     sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
     onUserUpdate({});
     setLogoutSuccessAlert(true);
     setTimeout(() => {

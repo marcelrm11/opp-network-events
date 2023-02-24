@@ -2,18 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col } from "reactstrap";
 import { MyCard } from "./MyCard";
 
-export const Home = ({ user }) => {
+export const Home = ({ user, token }) => {
   // console.log("layout renders");
   const [events, setEvents] = useState([]);
+  // const [filters,setFilters] = useState([])
   const url = "http://localhost:8000/events/" + "events/";
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch(url);
+      console.log("token from storage", token);
+      let headers = {};
+      if (token) {
+        headers = {
+          Authorization: `Token ${token}`,
+        };
+      }
+      const response = await fetch(url, {
+        headers: headers,
+      });
       const data = await response.json();
       setEvents(data);
     }
     fetchData();
-  }, [url]);
+  }, [user?.id]);
+  // console.log(user);
+
   return (
     <Container>
       <h1>Events {user.first_name}</h1>
@@ -27,6 +39,7 @@ export const Home = ({ user }) => {
                 date={e.date}
                 imgUrl={e.img_url}
                 eventId={e.id}
+                status={e.status}
               />
             </Col>
           );

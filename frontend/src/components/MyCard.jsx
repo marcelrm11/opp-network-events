@@ -1,18 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  Card,
-  CardBody,
-  CardTitle,
-  CardSubtitle,
-  CardText,
-  Button,
-} from "reactstrap";
+import { Card, CardBody, CardTitle, Button } from "reactstrap";
 import formatDate from "../functions/formatDate";
 import "../styles/MyCard.css";
-import { BsCalendar4Event, BsClock, BsGeoAlt } from "react-icons/bs";
+import {
+  BsCalendar4Event,
+  BsClock,
+  BsGeoAlt,
+  BsDiamondHalf,
+} from "react-icons/bs";
 
-export const MyCard = ({ title, date, location, imgUrl, eventId }) => {
+export const MyCard = ({ title, date, location, imgUrl, eventId, status }) => {
   return (
     <Card className="my-card">
       <img alt="Sample" src={imgUrl} />
@@ -36,6 +34,12 @@ export const MyCard = ({ title, date, location, imgUrl, eventId }) => {
               <BsGeoAlt />
             </span>
             <span>{location}</span>
+          </div>
+          <div>
+            <span className="me-3">
+              <BsDiamondHalf />
+            </span>
+            <span>{status}</span>
           </div>
         </div>
         <Button color="info">
