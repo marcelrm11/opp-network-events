@@ -10,22 +10,23 @@ export const Home = () => {
     async function fetchData() {
       const response = await fetch(url);
       const data = await response.json();
-      console.log(data);
       setEvents(data);
     }
     fetchData();
   }, [url]);
   return (
     <Container>
-      <Row xs="1" sm="2" md="4">
+      <h1>Events</h1>
+      <Row xs="1" sm="2" md="4" className="gy-3">
         {events.map((e) => {
           return (
-            <Col className="bg-light border" key={`${e.title}${e.date}`}>
+            <Col className="gap-1" key={`${e.title}${e.date}`}>
               <MyCard
                 title={e.title}
                 location={e.location}
                 date={e.date}
                 imgUrl={e.img_url}
+                eventId={e.id}
               />
             </Col>
           );
