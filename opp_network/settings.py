@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'debug_toolbar',
     'corsheaders',
     'events'
@@ -57,11 +58,22 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:5173'
+]
+
 INTERNAL_IPS = [
     # ...
     "127.0.0.1",
     # ...
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
 
 ROOT_URLCONF = 'opp_network.urls'
 

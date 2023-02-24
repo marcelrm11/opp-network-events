@@ -20,4 +20,4 @@ class EventSerializer(serializers.ModelSerializer):
 class SubscriberSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email']
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'img_url']

@@ -8,6 +8,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from .models import User, Event
 from .serializers import SubscriberSerializer, UserSerializer, EventSerializer
 
@@ -25,6 +26,8 @@ def events_list(request):
     if request.method == 'GET':
 
         queryset = Event.objects.select_related('creator').prefetch_related('subscribers').all()
+
+        print("events for:", request.user)
 
         # Depending on User and Status:
         # -----------------------------
@@ -175,10 +178,11 @@ def subscribers(request, id):
     elif request.method == 'POST':
 
         # only logged in users should subscribe to an event
+        print(request.user, request.user.is_authenticated)
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        # subscribe logged in user to the event
+        # subscribe logged in user to the event (empty body)
         event.subscribers.add(request.user)
         event.save()
         return Response(status=status.HTTP_200_OK)
@@ -227,17 +231,18 @@ def create_user(request):
 
     # if no username was provided:
     if not username or not password:
-        return Response({'msg': 'username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # if username already used in database:
     existing_user = User.objects.filter(username=username).exists()
     if existing_user:
-        return Response({'msg': 'username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'username already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # validate form data and create user:
     try:
         validate_password(password)
     except ValidationError as e:
+        print("validationError:", e)
         return Response({'validation errors': e}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     serializer.is_valid(raise_exception=True)
@@ -247,14 +252,8 @@ def create_user(request):
 
 # USERS (DETAIL, UPDATE, DELETE) =======
 # ======================================
-# only logged users can access this area
-@login_required
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 def user_detail(request, id):
-
-    # only the same user or a superuser can see/edit user details
-    if (request.user.id != id) or (not request.user.is_superuser):
-        return Response(status=status.HTTP_403_FORBIDDEN)
 
     # search specific user in database:
     user = get_object_or_404(User, pk=id)
@@ -268,6 +267,11 @@ def user_detail(request, id):
     # update user details:
     # --------------------
     elif request.method in ['PUT', 'PATCH']:
+
+        # only the same user or a superuser can edit user details
+        if (not request.user.is_authenticated and request.user.id != id) or (not request.user.is_superuser):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         serializer = UserSerializer(user, data=request.data, partial=request.method == 'PATCH')
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -282,13 +286,13 @@ def user_detail(request, id):
 
 # AUTHENTICATION =======
 # ======================
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def user_login(request):
 
     # if there is an active session
     if request.user.is_authenticated:
-        user = UserSerializer(request.user)
-        return Response({'msg': 'user already logged in', 'user': user}, status=status.HTTP_200_OK)
+        serializer = UserSerializer(request.user)
+        return Response({'msg': 'user already logged in', 'user': serializer.data}, status=status.HTTP_200_OK)
 
     # check request credentials and authenticate:
     username = request.data.get('username', None)
@@ -304,8 +308,21 @@ def user_login(request):
 
     # authentication succeeded
     login(request, user)
-    return Response({'msg': 'login successful'}, status=status.HTTP_202_ACCEPTED)        
+    serializer = UserSerializer(request.user)
+    token, created = Token.objects.get_or_create(user=user)
+    return Response({'msg': "login successful", 'user': serializer.data, 'token': token.key}, status=status.HTTP_200_OK)
 
+# check current session:
+# ----------------------
+@api_view()
+def current_user(request):
+    if request.user.is_authenticated:
+        user = UserSerializer(request.user)
+        return Response(user.data)
+    return Response({'msg': 'no active session'})
+
+# logout:
+# -------
 @api_view()
 def user_logout(request):
     logout(request)
