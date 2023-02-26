@@ -33,7 +33,9 @@ pipenv shell
 
 - select the python interpreter created for this virtual environment, on VS Command Palette. It should have a path stating your virtual environment directory. This will enable the virtual environment for the new terminals opened in this project.
 
-![Select Python Interpreter](./frontend/src/assets/select-python-interpreter.png)
+<!-- ![Select Python Interpreter](./frontend/src/assets/select-python-interpreter.png) -->
+
+<img src="./frontend/src/assets/select-python-interpreter.png" width="200" alt="Select Python Interpreter" />
 
 #### Database configuration:
 
