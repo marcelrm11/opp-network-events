@@ -35,7 +35,7 @@ pipenv shell
 
 <!-- ![Select Python Interpreter](./frontend/src/assets/select-python-interpreter.png) -->
 
-<img src="./frontend/src/assets/select-python-interpreter.png" width="200" alt="Select Python Interpreter" />
+<img src="./frontend/src/assets/select-python-interpreter.png" width="400" alt="Select Python Interpreter" />
 
 #### Database configuration:
 
