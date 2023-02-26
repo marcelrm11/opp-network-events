@@ -15,7 +15,7 @@ cd ./opp-network-events
 
 ### Backend: Python-Django
 
-- this project uses python 3.11.1, check your system and download it if needed:
+- this project uses python 3.11.1, check your system and download it if needed.
 - also install pipenv if needed:
 
 ```shell
@@ -32,6 +32,8 @@ pipenv shell
 ```
 
 - select the python interpreter created for this virtual environment, on VS Command Palette. It should have a path stating your virtual environment directory. This will enable the virtual environment for the new terminals opened in this project.
+
+![Select Python Interpreter](./frontend/src/assets/select-python-interpreter.png)
 
 #### Database configuration:
 
