@@ -9,7 +9,7 @@ import {
   NavItem,
 } from "reactstrap";
 import { Navigate, NavLink } from "react-router-dom";
-import logo from "../assets/react.svg";
+import { SiEventstore } from "react-icons/si";
 import "../styles/Header.css";
 import { LoginModal } from "./LoginModal";
 import { SignupModal } from "./SignupModal";
@@ -93,7 +93,7 @@ export const Header = ({ user, token, onUserUpdate, onNewEvent, ...args }) => {
     <div>
       <Navbar {...args}>
         <NavLink to="/" className="navbar-brand">
-          <img src={logo} alt="logo" className="logo me-3" />
+          <SiEventstore alt="logo" className="logo me-3" />
           Network Events{user?.is_superuser && "  - Super User"}
         </NavLink>
 
