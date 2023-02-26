@@ -45,6 +45,19 @@ createdb my-db-name
 
 - in `settings.py` under DATABASES, configure your database connection, editting the name, user, password, host and port for your database connection.
 
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql', # or alternative
+        'NAME': 'my-db-name',
+        'USER': 'my-postgres-user',
+        'PASSWORD': 'my-password',
+        'HOST': '127.0.0.1', # localhost
+        'PORT': '5432', # this is PostgreSQL default
+    }
+}
+```
+
 - apply migrations:
 
 ```shell
