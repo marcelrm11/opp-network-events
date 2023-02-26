@@ -48,27 +48,6 @@ function App() {
     fetchData();
   };
 
-  // const url = "http://localhost:8000/events/" + "events/";
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     let headers = {};
-  //     if (token) {
-  //       headers = {
-  //         Authorization: `Token ${token}`,
-  //       };
-  //     }
-  //     const response = await fetch(url, {
-  //       headers: headers,
-  //     });
-  //     const data = await response.json();
-  //     setEvents(data);
-  //   }
-  //   fetchData();
-  // }, [token, currentUser]);
-  // console.log(user);
-
-  // console.log("app state current user:", currentUser);
-  // console.log("app state current token:", token);
   return (
     <div className="App">
       <BrowserRouter basename="/">
