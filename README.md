@@ -64,7 +64,16 @@ DATABASES = {
 python manage.py migrate
 ```
 
-- populate with mock data (optional), you can use the sql files found in the "events" directory. I use pgAdmin and copy paste the files. First the users file and after, the events file.
+- [OPTIONAL] populate with mock data, you can use the sql files found in the "events" directory. I use pgAdmin and copy paste the files. First the users file and after, the events file.
+
+```sql
+-- Mock data files contain 1000 rows like these.
+-- Users:
+insert into events_user (id, first_name, last_name, email, password, username, is_superuser, is_staff, is_active, date_joined) values (1, 'Hubie', 'Seer', 'hseer0@kickstarter.com', 'nFZzbSO9a', 'hseer0', true, false, true, '2023-02-16 07:14:25');
+-- Events:
+insert into events_event (id, title, slug, date, status, location, creator_id) values (1, 'sit amet sapien dignissim vestibulum vestibulum ante ipsum', 'jni-ysf-ycu-joc', '2023-01-31 16:39:19', 'PB', '5 Hayes Crossing', 216);
+```
+
 - then, you'll need to run this queries to set the current id values for both tables:
 
 ```sql
