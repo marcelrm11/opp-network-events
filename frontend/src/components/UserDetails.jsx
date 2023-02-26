@@ -21,12 +21,13 @@ export const UserDetails = () => {
       setIsLoading(false);
       setDetails({
         username: data.username,
-        fullName: `${data.first_name} ${data.last_name}`,
+        name: `${data.first_name} ${data.last_name}`,
         email: data.email,
-        eventsCreated: data.events_created,
-        eventsSubscribed: events_subscribed,
+        // eventsCreated: data.events_created,
+        // eventsSubscribed: data.events_subscribed,
       });
-      setImgUrl(data.img_url);
+      setAuthorized(true);
+      setImgUrl(`https://picsum.photos/id/${data.id}/400/400`);
     } catch (e) {
       setIsLoading(false);
       setAuthorized(false);
@@ -45,12 +46,16 @@ export const UserDetails = () => {
 
   return (
     <Container className="user-details">
-      <h1>User Details</h1>
-      {isLoading && (
-        <div className="spinner-container">
-          <Spinner color="info" className="spinner" type="grow" />
-        </div>
-      )}
+      <Row className="mt-3">
+        <Col>
+          <h1>User Details</h1>
+          {isLoading && (
+            <div className="spinner-container">
+              <Spinner color="info" className="spinner" type="grow" />
+            </div>
+          )}
+        </Col>
+      </Row>
       {details && (
         <Row xs="1" sm="2">
           <Col>

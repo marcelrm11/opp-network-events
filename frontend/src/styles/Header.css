@@ -1,9 +1,18 @@
 .logo {
-  height: 50px;
-  width: 50px;
+  height: 25px;
+  width: 25px;
+}
+@media screen and (min-width: 576px) {
+  .logo {
+    height: 50px;
+    width: 50px;
+  }
 }
 .inactive {
   color: rgba(255, 255, 255, 0.55) !important;
+}
+.inactive:hover {
+  color: rgba(255, 255, 255, 1) !important;
 }
 .navbar-brand {
   padding-top: 0.3125rem;

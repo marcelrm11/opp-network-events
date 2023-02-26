@@ -11,35 +11,76 @@ import { fetchCurrentUser } from "../functions/authentication";
 function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [token, setToken] = useState("");
+  // const [events, setEvents] = useState([]);
+
   useEffect(() => {
-    // console.log("app use effect");
-    fetchCurrentUser();
-    // .then((res) =>
-    // console.log("app fetch current user:", res)
-    // );
+    fetchCurrentUser(token);
+    const storageUser = sessionStorage.getItem("user");
+    if (storageUser === JSON.stringify({ msg: "no active session" })) {
+      sessionStorage.removeItem("token");
+    }
     setCurrentUser(JSON.parse(sessionStorage.getItem("user")));
-  }, []);
+  }, [token]);
+
   useEffect(() => {
     setToken(JSON.parse(sessionStorage.getItem("token")));
-    // console.log("token in storage:", sessionStorage.getItem("token"));
-  }, []);
+  }, [currentUser]);
 
   const onUserUpdate = (user) => {
     setCurrentUser(user);
-    // console.log("app current user:", user);
+    console.log("app user update:", user);
   };
 
+  const onNewEvent = () => {
+    async function fetchData() {
+      let headers = {};
+      if (token) {
+        headers = {
+          Authorization: `Token ${token}`,
+        };
+      }
+      const response = await fetch(url, {
+        headers: headers,
+      });
+      const data = await response.json();
+      setEvents(data);
+    }
+    fetchData();
+  };
+
+  // const url = "http://localhost:8000/events/" + "events/";
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     let headers = {};
+  //     if (token) {
+  //       headers = {
+  //         Authorization: `Token ${token}`,
+  //       };
+  //     }
+  //     const response = await fetch(url, {
+  //       headers: headers,
+  //     });
+  //     const data = await response.json();
+  //     setEvents(data);
+  //   }
+  //   fetchData();
+  // }, [token, currentUser]);
+  // console.log(user);
+
   // console.log("app state current user:", currentUser);
+  // console.log("app state current token:", token);
   return (
     <div className="App">
       <BrowserRouter basename="/">
         <Header
-          color="dark"
+          color={currentUser?.is_superuser ? "primary" : "dark"}
           dark
           expand="md"
           container="md"
           user={currentUser}
+          token={token}
           onUserUpdate={onUserUpdate}
+          onNewEvent={onNewEvent}
         />
         <Routes>
           <Route element={<Home user={currentUser} token={token} />} path="/" />
