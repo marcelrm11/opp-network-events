@@ -17,12 +17,12 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(models.Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ['title', 'date', 'status', 'creator']
+    list_display = ['title', 'date', 'location', 'status', 'creator']
     list_editable = ['status']
     list_per_page = 25
     list_filter = ['status', 'date']
     ordering = ['date']
-    search_fields = ['title__icontains']
+    search_fields = ['title__icontains', 'location__icontains']
 
 
 # admin.site.register(models.Event)

@@ -1,0 +1,19 @@
+.event-details img {
+  max-width: 100%;
+}
+.spinner-container {
+  position: relative;
+}
+.spinner {
+  position: absolute;
+  top: 25vh;
+  left: calc(50% - 2.5rem);
+  height: 5rem;
+  width: 5rem;
+}
+.subscribers-pic {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  margin-left: 1em;
+}

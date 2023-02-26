@@ -1,6 +1,6 @@
 import datetime
 from django.shortcuts import render, get_object_or_404
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
@@ -8,6 +8,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from .models import User, Event
 from .serializers import SubscriberSerializer, UserSerializer, EventSerializer
 
@@ -26,6 +27,8 @@ def events_list(request):
 
         queryset = Event.objects.select_related('creator').prefetch_related('subscribers').all()
 
+        print("events for:", request.user)
+
         # Depending on User and Status:
         # -----------------------------
         
@@ -34,7 +37,7 @@ def events_list(request):
 
             # If not logged in -> only see Public events:
             if not request.user.is_authenticated:
-                queryset = queryset.filter(status='PU')
+                queryset = queryset.filter(status='PB')
 
             # Draft events -> only shown to creator:
             queryset = queryset.exclude(Q(status='DR') & ~Q(creator=request.user.id))
@@ -81,7 +84,7 @@ def events_list(request):
     elif request.method == 'POST':
 
         if not request.user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'msg': 'you are not logged in'},status=status.HTTP_401_UNAUTHORIZED)
         
         # set the creator to the current logged in user
         request.data['creator'] = request.user.id
@@ -102,32 +105,34 @@ def event_detail(request, id):
     # get event details:
     # ------------------
     if request.method == 'GET':
+        print("event details for:", request.user)
+        print("superuser?", request.user.is_superuser)
 
         # no superusers have some filters to the events they can see
         if not request.user.is_superuser:
 
             # anonymous users can only see public events:
-            if (not request.user.is_authenticated) and (not event.status=='PU'):
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            if (not request.user.is_authenticated) and (not event.status=='PB'):
+                return Response({'msg': 'you are not logged in'},status=status.HTTP_401_UNAUTHORIZED)
 
             # draft events only shown to creator if logged in:
             if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
-                return Response(status=status.HTTP_403_FORBIDDEN)
+                return Response({'msg': 'you are not allowed'},status=status.HTTP_403_FORBIDDEN)
 
         serializer = EventSerializer(event)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # can edit event only if user is authenticated
-    elif (not request.user.is_authenticated):
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    if (not request.user.is_authenticated):
+        return Response({'msg': 'you are not logged in'},status=status.HTTP_401_UNAUTHORIZED)
 
     # update event details:
     # ---------------------
     elif request.method in ['PUT', 'PATCH']:
 
         # can edit event only if user is the creator of the event OR is a superuser
-        if (request.user.id != event.creator.id) or (not request.user.is_superuser) :
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        if (request.user.id != event.creator.id) and (not request.user.is_superuser) :
+            return Response({'msg': 'you are not allowed'}, status=status.HTTP_403_FORBIDDEN)
 
         # validate data and update db record
         serializer = EventSerializer(event, data=request.data, partial=request.method == 'PATCH')
@@ -140,11 +145,15 @@ def event_detail(request, id):
     elif request.method == 'DELETE':
 
         # can delete event only if user is the creator of the event OR is a superuser
-        if (request.user.id != event.creator.id) or (not request.user.is_superuser):
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        if (request.user.id != event.creator.id) and (not request.user.is_superuser):
+            return Response({'msg': 'you are not allowed'},status=status.HTTP_403_FORBIDDEN)
 
         event.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'msg': 'event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET', 'PUT', 'PATCH'])
+def update_event():
+    pass
 
 
 # SUBSCRIBERS TO AN EVENT (READ, ADD) =======
@@ -159,13 +168,16 @@ def subscribers(request, id):
     # -------------------------
     if request.method == 'GET':
 
-        # anonymous users can only see public events:
-        if (not request.user.is_authenticated) and (not event.status=='PU'):
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # super user -> super powers
+        if not request.user.is_superuser:
 
-        # draft events only shown to creator if logged in:
-        if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            # anonymous users can only see public events:
+            if (not request.user.is_authenticated) and (not event.status=='PB'):
+                return Response({'msg': 'you are not logged in'},status=status.HTTP_401_UNAUTHORIZED)
+
+            # draft events only shown to creator if logged in:
+            if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
+                return Response({'msg': 'you are not allowed'},status=status.HTTP_403_FORBIDDEN)
 
         serializer = SubscriberSerializer(event.subscribers.all(), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -176,12 +188,13 @@ def subscribers(request, id):
 
         # only logged in users should subscribe to an event
         if not request.user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'msg': 'you are not logged in'},status=status.HTTP_401_UNAUTHORIZED)
 
-        # subscribe logged in user to the event
+        # subscribe logged in user to the event (empty body)
         event.subscribers.add(request.user)
         event.save()
-        return Response(status=status.HTTP_200_OK)
+        
+        return Response({'msg': 'subscribed to event successfully'}, status=status.HTTP_200_OK)
 
 
 # USERS (READ) =======
@@ -192,7 +205,7 @@ def users_list(request):
     
     # only a superuser can see all users 
     if not request.user.is_superuser:
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response({'msg': 'you are not a super user'},status=status.HTTP_403_FORBIDDEN)
 
     # view list of users:
     # -------------------
@@ -227,17 +240,18 @@ def create_user(request):
 
     # if no username was provided:
     if not username or not password:
-        return Response({'msg': 'username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # if username already used in database:
     existing_user = User.objects.filter(username=username).exists()
     if existing_user:
-        return Response({'msg': 'username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'username already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # validate form data and create user:
     try:
         validate_password(password)
     except ValidationError as e:
+        print("validationError:", e)
         return Response({'validation errors': e}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     serializer.is_valid(raise_exception=True)
@@ -247,14 +261,8 @@ def create_user(request):
 
 # USERS (DETAIL, UPDATE, DELETE) =======
 # ======================================
-# only logged users can access this area
-@login_required
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 def user_detail(request, id):
-
-    # only the same user or a superuser can see/edit user details
-    if (request.user.id != id) or (not request.user.is_superuser):
-        return Response(status=status.HTTP_403_FORBIDDEN)
 
     # search specific user in database:
     user = get_object_or_404(User, pk=id)
@@ -268,6 +276,11 @@ def user_detail(request, id):
     # update user details:
     # --------------------
     elif request.method in ['PUT', 'PATCH']:
+
+        # only the same user or a superuser can edit user details
+        if (not request.user.is_authenticated and request.user.id != id) or (not request.user.is_superuser):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         serializer = UserSerializer(user, data=request.data, partial=request.method == 'PATCH')
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -277,18 +290,18 @@ def user_detail(request, id):
     # ------------
     elif request.method == 'DELETE':
         user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'msg': 'user deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
 
 # AUTHENTICATION =======
 # ======================
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def user_login(request):
 
     # if there is an active session
     if request.user.is_authenticated:
-        user = UserSerializer(request.user)
-        return Response({'msg': 'user already logged in', 'user': user}, status=status.HTTP_200_OK)
+        serializer = UserSerializer(request.user)
+        return Response({'msg': 'user already logged in', 'user': serializer.data}, status=status.HTTP_200_OK)
 
     # check request credentials and authenticate:
     username = request.data.get('username', None)
@@ -304,8 +317,23 @@ def user_login(request):
 
     # authentication succeeded
     login(request, user)
-    return Response({'msg': 'login successful'}, status=status.HTTP_202_ACCEPTED)        
+    serializer = UserSerializer(request.user)
+    token, created = Token.objects.get_or_create(user=user)
+    return Response({'msg': "login successful", 'user': serializer.data, 'token': token.key}, status=status.HTTP_200_OK)
 
+# check current session:
+# ----------------------
+@api_view()
+def current_user(request):
+    if request.user.is_authenticated:
+        print("user authenticated:", request.user)
+        user = UserSerializer(request.user)
+        return Response(user.data)
+    print("user not authenticated:", request.user)
+    return Response({'msg': 'no active session'})
+
+# logout:
+# -------
 @api_view()
 def user_logout(request):
     logout(request)
