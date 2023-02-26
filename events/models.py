@@ -3,7 +3,7 @@ from django.db import models
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    img_url = models.CharField(max_length=255, null=True)
+    img_url = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name}'
@@ -30,7 +30,7 @@ class Event(models.Model):
     # we could use GeoDjango for precise location data (PointField)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events_created')
     subscribers = models.ManyToManyField(User, related_name='events_subscribed', blank=True)
-    img_url = models.CharField(max_length=255, null=True)
+    img_url = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self) -> str:
         return f'{self.title}, {self.date}'
