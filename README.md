@@ -74,7 +74,7 @@ insert into events_user (id, first_name, last_name, email, password, username, i
 insert into events_event (id, title, slug, date, status, location, creator_id) values (1, 'sit amet sapien dignissim vestibulum vestibulum ante ipsum', 'jni-ysf-ycu-joc', '2023-01-31 16:39:19', 'PB', '5 Hayes Crossing', 216);
 ```
 
-- then, you'll need to run this queries to set the current id values for both tables:
+- then, you'll need to run these queries to set the current id values for both tables:
 
 ```sql
 SELECT setval('events_user_id_seq', (SELECT MAX(id) FROM events_user));
@@ -115,7 +115,7 @@ follow the steps and then go to the backend URL.
 cd ./frontend
 ```
 
-- install dependencies and run the app in development mode:
+- install dependencies:
 
 ```shell
 npm install
@@ -123,20 +123,20 @@ npm install
 
 ## Run the project
 
-- start the backend server from the project root:
+- start the backend server from the project root (you can specify a port number)
 
 ```shell
-python manage.py runserver
+python manage.py runserver #[port_number]
 ```
 
-by default, it will start at http://127.0.0.1:8000/
+by default, it will start at http://127.0.0.1:8000/ (localhost port 8000)
 this is used by the frontend to make api calls to the database
 
-- run the project from the frontend directory:
+- run the project from the frontend directory in development mode:
 
 ```shell
 npm run dev
 ```
 
-by default, it will start at http://127.0.0.1:5173/
+by default, it will start at http://127.0.0.1:5173/ (localhost port 5173)
 this is where the app can be accessed
