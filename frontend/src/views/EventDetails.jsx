@@ -149,16 +149,18 @@ export const EventDetails = ({ user, token }) => {
                   })}
                 </tbody>
               </Table>
-              <div className="d-flex gap-3">
-                <Button color="info" onClick={subscribe}>
-                  Subscribe to event
-                </Button>
-                {(user?.is_superuser || event.creator === user?.id) && (
-                  <Button color="info" outline onClick={toggleEventModal}>
-                    Edit event
+              {user?.id && (
+                <div className="d-flex gap-3">
+                  <Button color="info" onClick={subscribe}>
+                    Subscribe to event
                   </Button>
-                )}
-              </div>
+                  {(user?.is_superuser || event.creator === user?.id) && (
+                    <Button color="info" outline onClick={toggleEventModal}>
+                      Edit event
+                    </Button>
+                  )}
+                </div>
+              )}
             </Col>
           </Row>
           {subscriptionSuccess && (
@@ -176,47 +178,49 @@ export const EventDetails = ({ user, token }) => {
             </Row>
           )}
           <Row xs="1">
-            <Col>
-              <Button
-                onClick={toggleSubscribers}
-                color="info"
-                outline
-                className="mt-3"
-              >
-                See attendants
-                <Badge className="ms-2" color="info">
-                  {subscribers.length}
-                </Badge>
-              </Button>
-              <Collapse isOpen={showSubscribers}>
-                <Table className="table-info" striped>
-                  <thead>
-                    <tr>
-                      <th> </th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>username</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {subscribers.map((s) => (
-                      <tr key={s.username}>
-                        <td>
-                          <img
-                            src={`https://picsum.photos/id/${s.id}/400/400`}
-                            alt=""
-                            className="subscribers-pic"
-                          />
-                        </td>
-                        <td>{s.first_name}</td>
-                        <td>{s.last_name}</td>
-                        <td>{s.username}</td>
+            {user?.id && (
+              <Col>
+                <Button
+                  onClick={toggleSubscribers}
+                  color="info"
+                  outline
+                  className="mt-3"
+                >
+                  See attendants
+                  <Badge className="ms-2" color="info">
+                    {subscribers.length}
+                  </Badge>
+                </Button>
+                <Collapse isOpen={showSubscribers}>
+                  <Table className="table-info" striped>
+                    <thead>
+                      <tr>
+                        <th> </th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>username</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </Collapse>
-            </Col>
+                    </thead>
+                    <tbody>
+                      {subscribers.map((s) => (
+                        <tr key={s.username}>
+                          <td>
+                            <img
+                              src={`https://picsum.photos/id/${s.id}/400/400`}
+                              alt=""
+                              className="subscribers-pic"
+                            />
+                          </td>
+                          <td>{s.first_name}</td>
+                          <td>{s.last_name}</td>
+                          <td>{s.username}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </Collapse>
+              </Col>
+            )}
           </Row>
         </>
       )}

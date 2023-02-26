@@ -67,13 +67,13 @@ export const Header = ({ user, token, onUserUpdate, onNewEvent, ...args }) => {
     console.log(data);
     hideBar();
     setActiveSession(false);
+    setLogoutSuccessAlert(true);
     sessionStorage.removeItem("user");
     sessionStorage.removeItem("token");
     onUserUpdate({});
-    setLogoutSuccessAlert(true);
     setTimeout(() => {
       setLogoutSuccessAlert(false);
-    }, 3000);
+    }, 4000);
   }; // ==================================
 
   // CREATE EVENT ====================
