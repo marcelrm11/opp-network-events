@@ -33,15 +33,6 @@ pipenv shell
 
 - select the python interpreter created for this virtual environment, on VS Command Palette. It should have a path stating your virtual environment directory. This will enable the virtual environment for the new terminals opened in this project.
 
-- start the server:
-
-```shell
-python manage.py runserver
-```
-
-by default, it will start at http://127.0.0.1:8000/
-this is used by the frontend
-
 #### Database configuration:
 
 - create database, open a new terminal window
@@ -104,5 +95,24 @@ cd ./frontend
 
 ```shell
 npm install
+```
+
+## Run the project
+
+- start the backend server from the project root:
+
+```shell
+python manage.py runserver
+```
+
+by default, it will start at http://127.0.0.1:8000/
+this is used by the frontend to make api calls to the database
+
+- run the project from the frontend directory:
+
+```shell
 npm run dev
 ```
+
+by default, it will start at http://127.0.0.1:5173/
+this is where the app can be accessed
