@@ -12,7 +12,7 @@ import {
 } from "react-icons/bs";
 import { EventModal } from "./EventModal";
 
-export const MyCard = ({ user, event, token }) => {
+export const EventCard = ({ user, event, token }) => {
   const [eventModal, setEventModal] = useState(false);
 
   const toggleEventModal = () => {

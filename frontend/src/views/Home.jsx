@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Spinner } from "reactstrap";
 import { FilterModal } from "../components/FilterModal";
-import { MyCard } from "../components/MyCard";
+import { EventCard } from "../components/EventCard";
 
 export const Home = ({ user, token }) => {
   // console.log("home renders");
@@ -72,7 +72,7 @@ export const Home = ({ user, token }) => {
             {events.map((e) => {
               return (
                 <Col className="gap-1" key={`${e.title}${e.date}`}>
-                  <MyCard event={e} user={user} token={token} />
+                  <EventCard event={e} user={user} token={token} />
                 </Col>
               );
             })}
