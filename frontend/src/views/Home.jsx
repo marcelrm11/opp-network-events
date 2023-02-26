@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Button } from "reactstrap";
+import { Container, Row, Col, Button, Spinner } from "reactstrap";
 import { FilterModal } from "../components/FilterModal";
 import { MyCard } from "../components/MyCard";
 
@@ -9,9 +9,11 @@ export const Home = ({ user, token }) => {
   const baseUrl = "http://localhost:8000/events/events/";
   const [url, setUrl] = useState(baseUrl);
   const [filterModal, setFilterModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // const url = "http://localhost:8000/events/" + "events/";
   useEffect(() => {
+    setIsLoading(true);
     async function fetchData() {
       let headers = {};
       if (token) {
@@ -23,6 +25,7 @@ export const Home = ({ user, token }) => {
         headers: headers,
       });
       const data = await response.json();
+      setIsLoading(false);
       setEvents(data);
     }
     fetchData();
@@ -60,6 +63,11 @@ export const Home = ({ user, token }) => {
             </Button>
           </Col>
         </Row>
+        {isLoading && (
+          <div className="spinner-container">
+            <Spinner color="info" className="spinner" type="grow" />
+          </div>
+        )}
         <Row xs="1" sm="2" md="3" lg="4" className="gy-3">
           {events.map((e) => {
             return (
