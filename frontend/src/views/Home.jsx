@@ -63,20 +63,21 @@ export const Home = ({ user, token }) => {
             </Button>
           </Col>
         </Row>
-        {isLoading && (
+        {isLoading ? (
           <div className="spinner-container">
             <Spinner color="info" className="spinner" type="grow" />
           </div>
+        ) : (
+          <Row xs="1" sm="2" md="3" lg="4" className="gy-3">
+            {events.map((e) => {
+              return (
+                <Col className="gap-1" key={`${e.title}${e.date}`}>
+                  <MyCard event={e} user={user} token={token} />
+                </Col>
+              );
+            })}
+          </Row>
         )}
-        <Row xs="1" sm="2" md="3" lg="4" className="gy-3">
-          {events.map((e) => {
-            return (
-              <Col className="gap-1" key={`${e.title}${e.date}`}>
-                <MyCard event={e} user={user} token={token} />
-              </Col>
-            );
-          })}
-        </Row>
       </Container>
       <FilterModal
         isOpen={filterModal}

@@ -94,6 +94,15 @@ follow the steps and then go to the backend URL.
 
 ### Frontend: React-Vite
 
-- cd in frontend dir
-- install dependencies
-- npm run dev
+- to start the frontend, you must first cd in "frontend" directory:
+
+```shell
+cd ./frontend
+```
+
+- install dependencies and run the app in development mode:
+
+```shell
+npm install
+npm run dev
+```
