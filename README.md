@@ -126,7 +126,7 @@ npm install
 - start the backend server from the project root (you can specify a port number)
 
 ```shell
-python manage.py runserver #[port_number]
+python manage.py runserver # [port_number]
 ```
 
 by default, it will start at http://127.0.0.1:8000/ (localhost port 8000)
