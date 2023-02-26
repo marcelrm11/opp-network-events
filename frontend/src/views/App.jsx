@@ -14,12 +14,19 @@ function App() {
   // const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    fetchCurrentUser(token);
-    const storageUser = sessionStorage.getItem("user");
-    if (storageUser === JSON.stringify({ msg: "no active session" })) {
-      sessionStorage.removeItem("token");
+    async function fetchUserData() {
+      try {
+        fetchCurrentUser(token);
+        const storageUser = sessionStorage.getItem("user");
+        if (storageUser === JSON.stringify({ msg: "no active session" })) {
+          sessionStorage.removeItem("token");
+        }
+        setCurrentUser(JSON.parse(sessionStorage.getItem("user")));
+      } catch (e) {
+        console.log(e);
+      }
     }
-    setCurrentUser(JSON.parse(sessionStorage.getItem("user")));
+    fetchUserData();
   }, [token]);
 
   useEffect(() => {
