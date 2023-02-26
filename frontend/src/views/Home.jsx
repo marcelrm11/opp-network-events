@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Button } from "reactstrap";
-import { FilterModal } from "./FilterModal";
-import { MyCard } from "./MyCard";
+import { FilterModal } from "../components/FilterModal";
+import { MyCard } from "../components/MyCard";
 
 export const Home = ({ user, token }) => {
   // console.log("home renders");

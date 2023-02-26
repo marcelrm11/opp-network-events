@@ -28,7 +28,8 @@ export const MyCard = ({ user, event, token }) => {
           alt="Sample"
           src={`https://picsum.photos/id/${event.id}/400/400`}
           onError={(e) =>
-            (e.target.src = "https://picsum.photos/400/400?random=1&grayscale")
+            (e.target.src =
+              "https://picsum.photos/400/400?random=1&grayscale&blur=5")
           }
         />
         {(user?.is_superuser || event.creator === user?.id) && (

@@ -14,7 +14,7 @@ import {
 import "../styles/EventDetails.css";
 import formatDate from "../functions/formatDate";
 import { capitalize } from "../functions/stringFunctions";
-import { EventModal } from "./EventModal";
+import { EventModal } from "../components/EventModal";
 
 export const EventDetails = ({ user, token }) => {
   const { id } = useParams();

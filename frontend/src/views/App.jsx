@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import "../styles/App.css";
-import { Header } from "./Header";
+import { Header } from "../components/Header";
 import { Home } from "./Home";
 import { EventDetails } from "./EventDetails";
 import { UserDetails } from "./UserDetails";
