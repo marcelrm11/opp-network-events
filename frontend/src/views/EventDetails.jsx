@@ -32,11 +32,13 @@ export const EventDetails = ({ user, token }) => {
   const [subscriptionSuccess, setSubscriptionSuccess] = useState(false);
 
   let headers = {};
-  if (token) {
-    headers = {
-      Authorization: `Token ${token}`,
-    };
-  }
+  useEffect(() => {
+    if (token) {
+      headers = {
+        Authorization: `Token ${token}`,
+      };
+    }
+  }, [token]);
 
   const fetchData = async () => {
     try {
@@ -45,8 +47,8 @@ export const EventDetails = ({ user, token }) => {
         headers: headers,
       });
       const data = await response.json();
+      console.log("event data:", data);
       setEvent(data);
-      console.log("event:", data);
       const [formattedDate, formattedTime] = formatDate(data.date);
       const hostResponse = await fetch(baseUrl + `users/${data.creator}/`, {
         headers: headers,

@@ -4,14 +4,12 @@ import { FilterModal } from "../components/FilterModal";
 import { EventCard } from "../components/EventCard";
 
 export const Home = ({ user, token }) => {
-  // console.log("home renders");
   const [events, setEvents] = useState([]);
   const baseUrl = "http://localhost:8000/events/events/";
   const [url, setUrl] = useState(baseUrl);
   const [filterModal, setFilterModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // const url = "http://localhost:8000/events/" + "events/";
   useEffect(() => {
     setIsLoading(true);
     async function fetchData() {
@@ -41,7 +39,6 @@ export const Home = ({ user, token }) => {
     for (let [filter, value] of Object.entries(filters)) {
       console.log(filter, value ? true : false);
       if (value) {
-        console.log(filter, "evaluated to truthy, and it's,", value);
         newUrl += `${filter}=${value}&`;
       }
     }

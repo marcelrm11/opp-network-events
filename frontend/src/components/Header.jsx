@@ -8,7 +8,7 @@ import {
   Nav,
   NavItem,
 } from "reactstrap";
-import { Navigate, NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { SiEventstore } from "react-icons/si";
 import "../styles/Header.css";
 import { LoginModal } from "./LoginModal";
@@ -16,8 +16,9 @@ import { SignupModal } from "./SignupModal";
 import { fetchCurrentUser } from "../functions/authentication";
 import { CreateModal } from "./CreateModal";
 
-export const Header = ({ user, token, onUserUpdate, onNewEvent, ...args }) => {
+export const Header = ({ user, token, onUserUpdate, ...args }) => {
   const [activeSession, setActiveSession] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => {
     if (typeof user?.id == "number") {
       setActiveSession(true);
@@ -25,7 +26,6 @@ export const Header = ({ user, token, onUserUpdate, onNewEvent, ...args }) => {
       setActiveSession(false);
     }
   }, [user]);
-  // console.log("header user from props:", user);
 
   // LOGIN MANAGEMENT ================
   const [loginSuccessAlert, setLoginSuccessAlert] = useState(false);
@@ -62,25 +62,38 @@ export const Header = ({ user, token, onUserUpdate, onNewEvent, ...args }) => {
   const [logoutSuccessAlert, setLogoutSuccessAlert] = useState(false);
 
   const toggleLogout = async () => {
-    const response = await fetch("http://127.0.0.1:8000/events/logout/");
-    const data = await response.json();
-    console.log(data);
-    hideBar();
-    setActiveSession(false);
-    setLogoutSuccessAlert(true);
-    sessionStorage.removeItem("user");
-    sessionStorage.removeItem("token");
-    onUserUpdate({});
-    setTimeout(() => {
-      setLogoutSuccessAlert(false);
-    }, 4000);
+    try {
+      const response = await fetch("http://127.0.0.1:8000/events/logout/");
+      const data = await response.json();
+      console.log(data);
+      hideBar();
+      setActiveSession(false);
+      navigate("/");
+      setLogoutSuccessAlert(true);
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      onUserUpdate({});
+      setTimeout(() => {
+        setLogoutSuccessAlert(false);
+      }, 4000);
+    } catch (e) {
+      console.log(e);
+    }
   }; // ==================================
 
   // CREATE EVENT ====================
   const [eventModal, setEventModal] = useState(false);
+  const [createdEvent, setCreatedEvent] = useState(false);
   const toggleEvent = () => {
     setEventModal(!eventModal);
     hideBar();
+  };
+
+  const onNewEvent = () => {
+    setCreatedEvent(true);
+    setTimeout(() => {
+      setCreatedEvent(false);
+    }, 3000);
   }; // ==================================
 
   // NAVBAR MANAGEMENT ====================
@@ -156,16 +169,19 @@ export const Header = ({ user, token, onUserUpdate, onNewEvent, ...args }) => {
         toggle={toggleSignup}
         onSignupSuccess={handleSignupSuccess}
       ></SignupModal>
+      {signupSuccessAlert && (
+        <Alert color="success">
+          Registration successful! Verify your email and log in.
+        </Alert>
+      )}
       <CreateModal
         isOpen={eventModal}
         toggle={toggleEvent}
         token={token}
         onNewEvent={onNewEvent}
       />
-      {signupSuccessAlert && (
-        <Alert color="success">
-          Registration successful! Verify your email and log in.
-        </Alert>
+      {createdEvent && (
+        <Alert color="success">Event created successfully.</Alert>
       )}
       {logoutSuccessAlert && (
         <Alert color="secondary">Logout successful! Until next time.</Alert>

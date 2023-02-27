@@ -116,7 +116,11 @@ def event_detail(request, id):
                 return Response({'msg': 'you are not logged in'},status=status.HTTP_401_UNAUTHORIZED)
 
             # draft events only shown to creator if logged in:
-            if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
+            print("auth:", request.user.is_authenticated)
+            print("status:", event.status)
+            print("userID:", request.user.id)
+            print("creatorID:", event.creator.id)
+            if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator.id):
                 return Response({'msg': 'you are not allowed'},status=status.HTTP_403_FORBIDDEN)
 
         serializer = EventSerializer(event)
@@ -176,7 +180,7 @@ def subscribers(request, id):
                 return Response({'msg': 'you are not logged in'},status=status.HTTP_401_UNAUTHORIZED)
 
             # draft events only shown to creator if logged in:
-            if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator):
+            if (request.user.is_authenticated) and (event.status=='DR') and (request.user.id != event.creator.id):
                 return Response({'msg': 'you are not allowed'},status=status.HTTP_403_FORBIDDEN)
 
         serializer = SubscriberSerializer(event.subscribers.all(), many=True)
@@ -311,7 +315,6 @@ def user_login(request):
         return Response({'msg': 'credentials are required'}, status=status.HTTP_400_BAD_REQUEST)
     user = authenticate(request, username=username, password=password)
 
-    # authentication failed
     if not user:
         return Response({'msg': 'login failed'}, status=status.HTTP_401_UNAUTHORIZED)
 

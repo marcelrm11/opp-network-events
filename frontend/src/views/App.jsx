@@ -11,12 +11,12 @@ import { fetchCurrentUser } from "../functions/authentication";
 function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [token, setToken] = useState("");
-  // const [events, setEvents] = useState([]);
 
   useEffect(() => {
     async function fetchUserData() {
       try {
-        fetchCurrentUser(token);
+        console.log(token);
+        await fetchCurrentUser(token);
         const storageUser = sessionStorage.getItem("user");
         if (storageUser === JSON.stringify({ msg: "no active session" })) {
           sessionStorage.removeItem("token");
@@ -38,23 +38,6 @@ function App() {
     console.log("app user update:", user);
   };
 
-  const onNewEvent = () => {
-    async function fetchData() {
-      let headers = {};
-      if (token) {
-        headers = {
-          Authorization: `Token ${token}`,
-        };
-      }
-      const response = await fetch(url, {
-        headers: headers,
-      });
-      const data = await response.json();
-      setEvents(data);
-    }
-    fetchData();
-  };
-
   return (
     <div className="App">
       <BrowserRouter basename="/">
@@ -66,7 +49,6 @@ function App() {
           user={currentUser}
           token={token}
           onUserUpdate={onUserUpdate}
-          onNewEvent={onNewEvent}
         />
         <Routes>
           <Route element={<Home user={currentUser} token={token} />} path="/" />

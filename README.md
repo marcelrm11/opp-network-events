@@ -1,5 +1,19 @@
 # Opportunity Network Events Django Task
 
+## Description
+
+This is a mini-app for organizing and sharing events. It helps users browse through different events in one place.
+I learned how to build a Django REST API with a React Frontend.
+
+## Table of Contents (Optional)
+
+If your README is long, add a table of contents to make it easy for users to find what they need.
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Credits](#credits)
+- [License](#license)
+
 ## Installation
 
 Follow this steps to run the project in your machine.
@@ -130,7 +144,7 @@ python manage.py runserver # [port_number]
 ```
 
 by default, it will start at http://127.0.0.1:8000/ (localhost port 8000)
-this is used by the frontend to make api calls to the database
+this is used by the frontend to make api calls to the database.
 
 - run the project from the frontend directory in development mode:
 
@@ -139,4 +153,63 @@ npm run dev
 ```
 
 by default, it will start at http://127.0.0.1:5173/ (localhost port 5173)
-this is where the app can be accessed
+this is where the app can be accessed.
+
+<!--
+## Usage
+
+### Frontend:
+#### Router
+
+#### Authentication
+
+#### Display Events
+
+#### Filter Events
+
+Antes de comenzar a profundizar en los documentos de la API/Componente, sería genial ver cómo se ve el módulo en acción. Así puedo determinar rápidamente si el JS de ejemplo se ajusta al estilo y al problema deseados. La gente tiene muchas opiniones sobre cosas como promesas / devoluciones de llamada y ES6. Si se ajusta a los requisitos, entonces puedo proceder con más detalles.
+
+Provide instructions and examples for use. Include screenshots as needed.
+
+To add a screenshot, create an `assets/images` folder in your repository and upload your screenshot to it. Then, using the relative filepath, add it to your README using the following syntax:
+
+    ```md
+    ![alt text](assets/images/screenshot.png)
+    ```
+
+## Project Structure
+
+## API/Component
+
+El nombre, la descripción y el uso de este módulo me parecen atractivos. Es muy probable que utilice este módulo en este momento. Solo necesito escanear la API para asegurarme de que haga exactamente lo que necesito y que se integre fácilmente en mi base de código.
+
+La sección de API debe detallar los objetos y funciones del módulo, sus firmas, tipos de devolución, devoluciones de llamada y eventos en detalle. Los tipos deben incluirse donde no sean obvios. Deben dejarse claras las advertencias.
+
+## Stack | Not using the common-readme | Not required
+
+Stack tecnológico utilizado y porqué y si se quiere reconocimientos a librerias u otros proyectos base del que se parte. -->
+
+## Testing
+
+So far, the app has been tested manually within the development environment. The available tools to test and debug the project are:
+
+1. Django REST framework + debug toolbar for the backend.
+2. Chrome DevTools + React DevTools + React Strict Mode for the frontend.
+
+<!-- ## API Endpoints -->
+
+## Next Steps
+
+1. Correct Authentication syncing problems
+2. Add Features (CRUD)
+3. Improve UX
+4. Refactor (Django and React)
+5. Automated Testing
+
+## Contact info
+
+You can contact me at marcelrm11@gmail.com.
+
+<!-- ## License
+
+The last section of a high-quality README file is the license. This lets other developers know what they can and cannot do with your project. If you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/). -->

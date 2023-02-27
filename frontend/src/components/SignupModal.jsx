@@ -51,6 +51,7 @@ export const SignupModal = ({ isOpen, toggle, onSignupSuccess }) => {
 
   const signupAction = async () => {
     try {
+      console.log("data sent to register", credentials);
       const response = await fetch(baseUrl + `users/register/`, {
         method: "POST",
         headers: {
@@ -63,6 +64,7 @@ export const SignupModal = ({ isOpen, toggle, onSignupSuccess }) => {
         }),
       });
       const data = await response.json();
+      console.log("response from register endpoint", data);
       if (!response.ok) {
         setIsInvalid(true);
         const tempErrors = [];
