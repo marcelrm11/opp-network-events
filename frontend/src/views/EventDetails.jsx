@@ -16,6 +16,7 @@ import formatDate from "../functions/formatDate";
 import { capitalize } from "../functions/stringFunctions";
 import { EventModal } from "../components/EventModal";
 
+// page to show event details, subscribe to event, edit event details and see event subscribers
 export const EventDetails = ({ user, token }) => {
   const { id } = useParams();
   const baseUrl = "http://localhost:8000/events/";
@@ -31,6 +32,7 @@ export const EventDetails = ({ user, token }) => {
   const [showSubscribers, setShowSubscribers] = useState(false);
   const [subscriptionSuccess, setSubscriptionSuccess] = useState(false);
 
+  // set the authentication header for api calls
   let headers = {};
   useEffect(() => {
     if (token) {
@@ -40,6 +42,7 @@ export const EventDetails = ({ user, token }) => {
     }
   }, [token]);
 
+  // function used to fetch event data on useEffect below
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -90,6 +93,7 @@ export const EventDetails = ({ user, token }) => {
     }
   }, [eventUrl, subscriptionSuccess, eventModal]);
 
+  // function to make api call when user clicks "subscribe to event"
   const subscribe = async () => {
     try {
       const response = await fetch(eventUrl + "subscribers/", {

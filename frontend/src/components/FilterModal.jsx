@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import React, { useState } from "react";
+import {
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from "reactstrap";
 
-import { Form, FormFeedback, FormGroup, Input, Label } from "reactstrap";
-
+// modal to search and filter events
 export const FilterModal = ({ isOpen, toggle, onFiltersChange }) => {
   const [filters, setFilters] = useState({
     search_query: "",
@@ -18,6 +26,7 @@ export const FilterModal = ({ isOpen, toggle, onFiltersChange }) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
     console.log(filters);
   };
+  // checkbox field has a slightly different behavior
   const handleCheckboxChange = () => {
     setFilters({ ...filters, past_events: !filters.past_events });
     console.log(filters);

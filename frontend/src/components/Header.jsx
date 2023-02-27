@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Alert,
   Collapse,
   Navbar,
   NavbarToggler,
-  NavbarBrand,
   Nav,
   NavItem,
 } from "reactstrap";
-import { NavLink, useNavigate } from "react-router-dom";
-import { SiEventstore } from "react-icons/si";
 import "../styles/Header.css";
+import { SiEventstore } from "react-icons/si";
 import { LoginModal } from "./LoginModal";
 import { SignupModal } from "./SignupModal";
-import { fetchCurrentUser } from "../functions/authentication";
 import { CreateModal } from "./CreateModal";
 
+// navbar that controls the modals and the alerts
 export const Header = ({ user, token, onUserUpdate, ...args }) => {
   const [activeSession, setActiveSession] = useState(false);
   const navigate = useNavigate();

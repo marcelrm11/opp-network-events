@@ -51,7 +51,7 @@ pipenv shell
 
 #### Database configuration:
 
-- create database, open a new terminal window
+- create database:
 
 ```shell
 createdb my-db-name
@@ -201,10 +201,10 @@ So far, the app has been tested manually within the development environment. The
 ## Next Steps
 
 1. Correct Authentication syncing problems
-2. Add Features (CRUD)
-3. Improve UX
+2. Automated Testing
+3. Add Features (CRUD)
 4. Refactor (Django and React)
-5. Automated Testing
+5. Improve UX
 
 ## Contact info
 

@@ -4,6 +4,7 @@ import { Col, Container, Row, Table, Alert, Spinner } from "reactstrap";
 import "../styles/UserDetails.css";
 import { camelToHuman } from "../functions/stringFunctions";
 
+// view to show the user details
 export const UserDetails = () => {
   const { id } = useParams();
   const baseUrl = "http://localhost:8000/events/";
@@ -23,8 +24,6 @@ export const UserDetails = () => {
         username: data.username,
         name: `${data.first_name} ${data.last_name}`,
         email: data.email,
-        // eventsCreated: data.events_created,
-        // eventsSubscribed: data.events_subscribed,
       });
       setAuthorized(true);
       setImgUrl(`https://picsum.photos/id/${data.id}/400/400`);

@@ -8,14 +8,16 @@ import { EventDetails } from "./EventDetails";
 import { UserDetails } from "./UserDetails";
 import { fetchCurrentUser } from "../functions/authentication";
 
+// app that manages router, current user and authentication token
 function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [token, setToken] = useState("");
 
+  // user syncing with fetchUserData function (api call to auth/current_user)
   useEffect(() => {
     async function fetchUserData() {
       try {
-        console.log(token);
+        // console.log(token);
         await fetchCurrentUser(token);
         const storageUser = sessionStorage.getItem("user");
         if (storageUser === JSON.stringify({ msg: "no active session" })) {
@@ -29,13 +31,14 @@ function App() {
     fetchUserData();
   }, [token]);
 
+  // sync token in session storage
   useEffect(() => {
     setToken(JSON.parse(sessionStorage.getItem("token")));
   }, [currentUser]);
 
   const onUserUpdate = (user) => {
     setCurrentUser(user);
-    console.log("app user update:", user);
+    // console.log("app user update:", user);
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, CardBody, CardTitle, Button } from "reactstrap";
 import formatDate from "../functions/formatDate";
 import "../styles/MyCard.css";
@@ -12,6 +12,7 @@ import {
 } from "react-icons/bs";
 import { EventModal } from "./EventModal";
 
+// card to populate the homepage with events
 export const EventCard = ({ user, event, token }) => {
   const [eventModal, setEventModal] = useState(false);
 

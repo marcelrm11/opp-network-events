@@ -1,19 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import {
+  Alert,
+  Button,
+  Form,
+  FormGroup,
+  Input,
+  Label,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
-  Alert,
 } from "reactstrap";
-
-import { Form, FormGroup, Input, Label } from "reactstrap";
 
 import { camelToHuman } from "../functions/stringFunctions";
 
 export const SignupModal = ({ isOpen, toggle, onSignupSuccess }) => {
+  // modal form to create and register a user
   const [isInvalid, setIsInvalid] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
   const [credentials, setCredentials] = useState({
@@ -23,6 +26,7 @@ export const SignupModal = ({ isOpen, toggle, onSignupSuccess }) => {
     first_name: "",
     last_name: "",
   });
+  // this is used to populate the form
   const formFields = {
     username: {
       type: "text",
@@ -50,8 +54,9 @@ export const SignupModal = ({ isOpen, toggle, onSignupSuccess }) => {
   const baseUrl = "http://127.0.0.1:8000/events/";
 
   const signupAction = async () => {
+    // api call to /users/register with POST method and error handling
     try {
-      console.log("data sent to register", credentials);
+      // console.log("data sent to register", credentials);
       const response = await fetch(baseUrl + `users/register/`, {
         method: "POST",
         headers: {
@@ -64,7 +69,7 @@ export const SignupModal = ({ isOpen, toggle, onSignupSuccess }) => {
         }),
       });
       const data = await response.json();
-      console.log("response from register endpoint", data);
+      // console.log("response from register endpoint", data);
       if (!response.ok) {
         setIsInvalid(true);
         const tempErrors = [];

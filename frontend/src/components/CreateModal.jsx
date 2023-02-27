@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "reactstrap";
 
-import { Form, FormFeedback, FormGroup, Input, Label } from "reactstrap";
-
+// Modal Form to create an Event
 export const CreateModal = ({ isOpen, toggle, token, onNewEvent }) => {
   const [eventDetails, setEventDetails] = useState({
     title: "",
@@ -16,6 +25,7 @@ export const CreateModal = ({ isOpen, toggle, token, onNewEvent }) => {
   const url = `http://127.0.0.1:8000/events/events/`;
 
   const createAction = async () => {
+    // events endpoint with POST method and event details in request body
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -25,11 +35,11 @@ export const CreateModal = ({ isOpen, toggle, token, onNewEvent }) => {
         },
         body: JSON.stringify(eventDetails),
       });
-      console.log("passed event details:", eventDetails);
+      // console.log("passed event details:", eventDetails);
       const data = await response.json();
       console.log(data);
       if (!response.ok) {
-        console.log("not accepted");
+        // console.log("not accepted");
       } else {
         onNewEvent();
         toggle();

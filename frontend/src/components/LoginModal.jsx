@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import {
+  Button,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "reactstrap";
 
-import { Form, FormFeedback, FormGroup, Input, Label } from "reactstrap";
-
+// modal to login in the app
 export const LoginModal = ({
   isOpen,
   toggle,
@@ -20,6 +30,7 @@ export const LoginModal = ({
   const baseUrl = "http://127.0.0.1:8000/events/";
 
   const loginAction = async () => {
+    // api call with authentication and error handling
     try {
       const response = await fetch(baseUrl + `login/`, {
         method: "POST",
@@ -29,10 +40,11 @@ export const LoginModal = ({
         body: JSON.stringify(credentials),
       });
       const data = await response.json();
-      console.log("login response:", data);
+      // console.log("login response:", data);
       if (!response.ok) {
         setIsInvalid(true);
       } else {
+        // store the information in the session storage. should be improved to secure sensitive data
         setIsInvalid(false);
         sessionStorage.setItem("user", JSON.stringify(data.user));
         sessionStorage.setItem("token", JSON.stringify(data.token));

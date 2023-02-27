@@ -3,6 +3,7 @@ import { Container, Row, Col, Button, Spinner } from "reactstrap";
 import { FilterModal } from "../components/FilterModal";
 import { EventCard } from "../components/EventCard";
 
+// homepage where all events (depending on the specific user [anonymous, logged in, super-user]) are displayed
 export const Home = ({ user, token }) => {
   const [events, setEvents] = useState([]);
   const baseUrl = "http://localhost:8000/events/events/";
@@ -10,6 +11,7 @@ export const Home = ({ user, token }) => {
   const [filterModal, setFilterModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // fetch events on initial render, after authentication, user change or filtering
   useEffect(() => {
     setIsLoading(true);
     async function fetchData() {
@@ -33,16 +35,16 @@ export const Home = ({ user, token }) => {
     setFilterModal(!filterModal);
   };
 
+  // set url for events after filtering
   const handleFiltersChange = (filters) => {
-    console.log("filters:", filters);
+    // console.log("filters:", filters);
     let newUrl = baseUrl + "?";
     for (let [filter, value] of Object.entries(filters)) {
-      console.log(filter, value ? true : false);
       if (value) {
         newUrl += `${filter}=${value}&`;
       }
     }
-    console.log("new query:", newUrl);
+    // console.log("new query:", newUrl);
     setUrl(newUrl);
     toggleFilters();
   };

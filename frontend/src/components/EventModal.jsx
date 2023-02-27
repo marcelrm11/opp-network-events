@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import {
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from "reactstrap";
 
-import { Form, FormFeedback, FormGroup, Input, Label } from "reactstrap";
-
-export const EventModal = ({
-  isOpen,
-  toggle,
-  event,
-  token,
-  onUpdate,
-  //   onLoginSuccess,
-  //   onUserUpdate,
-}) => {
-  //   const [isInvalid, setIsInvalid] = useState(false);
+// modal to update an event
+export const EventModal = ({ isOpen, toggle, event, token, onUpdate }) => {
   const [eventDetails, setEventDetails] = useState({
     title: "",
     date: "",
@@ -51,16 +51,11 @@ export const EventModal = ({
       if (!response.ok) {
         setIsInvalid(true);
       } else {
-        // setIsInvalid(false);
-        // sessionStorage.setItem("user", JSON.stringify(data.user));
-        // sessionStorage.setItem("token", JSON.stringify(data.token));
-        // onUserUpdate(data.user);
         onUpdate();
         toggle();
         navigate(`/event/${event.id}/`);
       }
     } catch (e) {
-      //   setIsInvalid(true);
       console.log(e);
     }
   };
