@@ -5,14 +5,14 @@
 This is a mini-app for organizing and sharing events. It helps users browse through different events in one place.
 I learned how to build a Django REST API with a React Frontend.
 
-## Table of Contents (Optional)
+<!-- ## Table of Contents (Optional)
 
 If your README is long, add a table of contents to make it easy for users to find what they need.
 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Credits](#credits)
-- [License](#license)
+- [License](#license) -->
 
 ## Installation
 
