@@ -1,18 +1,9 @@
-# Opportunity Network Events Django Task
+# Network Events
 
 ## Description
 
-This is a mini-app for organizing and sharing events. It helps users browse through different events in one place.
+> This is a mini-app for organizing and sharing events. It helps users browse through different events in one place.
 I learned how to build a Django REST API with a React Frontend.
-
-<!-- ## Table of Contents (Optional)
-
-If your README is long, add a table of contents to make it easy for users to find what they need.
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Credits](#credits)
-- [License](#license) -->
 
 ## Installation
 
@@ -183,11 +174,7 @@ To add a screenshot, create an `assets/images` folder in your repository and upl
 
 El nombre, la descripción y el uso de este módulo me parecen atractivos. Es muy probable que utilice este módulo en este momento. Solo necesito escanear la API para asegurarme de que haga exactamente lo que necesito y que se integre fácilmente en mi base de código.
 
-La sección de API debe detallar los objetos y funciones del módulo, sus firmas, tipos de devolución, devoluciones de llamada y eventos en detalle. Los tipos deben incluirse donde no sean obvios. Deben dejarse claras las advertencias.
-
-## Stack | Not using the common-readme | Not required
-
-Stack tecnológico utilizado y porqué y si se quiere reconocimientos a librerias u otros proyectos base del que se parte. -->
+La sección de API debe detallar los objetos y funciones del módulo, sus firmas, tipos de devolución, devoluciones de llamada y eventos en detalle. Los tipos deben incluirse donde no sean obvios. Deben dejarse claras las advertencias. -->
 
 ## Testing
 
@@ -196,20 +183,13 @@ So far, the app has been tested manually within the development environment. The
 1. Django REST framework + debug toolbar for the backend.
 2. Chrome DevTools + React DevTools + React Strict Mode for the frontend.
 
-<!-- ## API Endpoints -->
-
 ## Next Steps
 
-1. Correct Authentication syncing problems
-2. Automated Testing
-3. Add Features (CRUD)
-4. Refactor (Django and React)
-5. Improve UX
+1. Automated Testing
+2. Add Features (CRUD)
+3. Refactor (Django and React)
+4. Improve UX
 
 ## Contact info
 
 You can contact me at marcelrm11@gmail.com.
-
-<!-- ## License
-
-The last section of a high-quality README file is the license. This lets other developers know what they can and cannot do with your project. If you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/). -->
